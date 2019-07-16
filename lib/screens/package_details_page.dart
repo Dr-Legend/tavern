@@ -4,10 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:groovin_material_icons/groovin_material_icons.dart';
 import 'package:provider/provider.dart';
 import 'package:pub_client/pub_client.dart' hide Tab;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tavern/src/pub_colors.dart';
 import 'package:tavern/widgets/html_view.dart';
 import 'package:tavern/widgets/score_tab.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'dart:convert';
 
 class PackageDetailsPage extends StatefulWidget {
   static const routeName = '/PackageDetailsPage';
@@ -203,6 +205,7 @@ class _PackageDetailsPageState extends State<PackageDetailsPage>
                           ),
                         ),
                         onPressed: () => launch(_package.apiReferenceUrl),
+                        tooltip: 'API Docs',
                       ),
                       if (_package.repositoryUrl != null)
                         IconButton(
@@ -216,6 +219,7 @@ class _PackageDetailsPageState extends State<PackageDetailsPage>
                                 : Colors.white,
                           ),
                           onPressed: () => launch(_package.repositoryUrl),
+                          tooltip: 'Source Code',
                         )
                       else
                         Container(),
@@ -231,19 +235,27 @@ class _PackageDetailsPageState extends State<PackageDetailsPage>
                                 : Colors.white,
                           ),
                           onPressed: () => launch(_package.issuesUrl),
+                          tooltip: 'Issue Tracker',
                         )
                       else
                         Container(),
                       IconButton(
                         icon: Icon(
-                          Icons.favorite_border,
+                          Icons.playlist_add,
                           color: DynamicTheme.of(context).brightness ==
                               Brightness.light
                               ? Colors.black
                               : Colors.white,
                         ),
-                        onPressed:
-                            () {}, //TODO handle favoriting and unfavoriting packages
+                        tooltip: 'Add to Subscriptions',
+                        onPressed: () async {
+                          // rough implementation!!! not sure if this will work!!
+                          SharedPreferences prefs = await SharedPreferences.getInstance();
+                          Map<String, String> packageSubscriptions = json.decode(prefs.getString('PackageSubscriptions'));
+                          var package = json.encode(_package);
+                          packageSubscriptions.putIfAbsent(package, () => ""); // ??
+                          prefs.setString('PackageSubscriptions', json.encode(packageSubscriptions));
+                        },
                       ),
                     ],
                   ),

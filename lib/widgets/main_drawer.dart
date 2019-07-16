@@ -49,7 +49,7 @@ class _MainDrawerState extends State<MainDrawer> {
                 color: Colors.blue,
               ),
               title: Text(
-                'pub.dev',
+                'Tavern',
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 22,
